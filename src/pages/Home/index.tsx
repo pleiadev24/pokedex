@@ -1,5 +1,10 @@
 import { FormEvent, useState, useEffect } from 'react'
-import { Favorite, Search } from '@styled-icons/material-outlined'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  Favorite,
+  FavoriteBorder,
+  Search
+} from '@styled-icons/material-outlined'
 
 import * as S from './styles'
 
@@ -10,7 +15,8 @@ import Button from '../../components/Button'
 import api from '../../services/api'
 import Heading from '../../components/Heading'
 
-type pokemonProps = {
+export type pokemonProps = {
+  id: number
   name: string
   image: imageProps
   types: typeProps[]
@@ -26,21 +32,35 @@ type typeProps = {
   }
 }
 
+// type wishlistProps = {
+//   wishlist: pokemonProps
+// }
+
 const Home = () => {
   const [name, setName] = useState('')
+  const [status, setStatus] = useState(0)
   const [pokemon, setPokemon] = useState<pokemonProps>()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const wishlist = useSelector((state: any) => state.wishlist)
+  const dispatch = useDispatch()
 
   const fetchPokemon = async (name: string) => {
-    const result = await api.get(`pokemon/${name}`)
-    console.log(result)
-    console.log(result.data.name)
-
-    const poke = {
-      name: result.data.name,
-      image: result.data.sprites,
-      types: result.data.types
-    }
-    setPokemon(poke)
+    await api
+      .get(`pokemon/${name}`)
+      .then(({ data, status }) => {
+        const poke = {
+          id: data.id,
+          name: data.name,
+          image: data.sprites,
+          types: data.types
+        }
+        setPokemon(poke)
+        setStatus(status)
+      })
+      .catch((error) => {
+        setStatus(error.status)
+        console.log(error)
+      })
   }
 
   const handleSeach = async (Event: FormEvent) => {
@@ -48,9 +68,28 @@ const Home = () => {
     fetchPokemon(name)
   }
 
+  const handleFavorite = () => {
+    const res = wishlist.findIndex(
+      (item: pokemonProps) => pokemon && item.id === pokemon.id
+    )
+
+    if (res < 0) {
+      dispatch({
+        type: 'ADD_WISHLIST',
+        pokemon
+      })
+    } else {
+      dispatch({
+        type: 'REM_WISHLIST',
+        pokemon
+      })
+    }
+  }
+
   useEffect(() => {
-    console.log(pokemon)
-  }, [pokemon])
+    console.log(wishlist)
+  }, [wishlist])
+
   return (
     <S.Wrapper>
       <S.Form>
@@ -61,7 +100,7 @@ const Home = () => {
         </Button>
         <Favorite size={30} aria-label="favorite" />
       </S.Form>
-      {pokemon && (
+      {pokemon && status === 200 && (
         <S.Card>
           <img src={pokemon.image.front_default} />
           <Heading lineLeft lineColor="secondary">
@@ -72,6 +111,9 @@ const Home = () => {
               {item.type.name}
             </Heading>
           ))}
+          <Button onClick={() => handleFavorite()}>
+            Favorito <FavoriteBorder size={20} />
+          </Button>
         </S.Card>
       )}
     </S.Wrapper>
