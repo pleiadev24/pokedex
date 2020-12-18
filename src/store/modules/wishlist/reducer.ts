@@ -8,12 +8,14 @@ type actionProps = {
 }
 
 const addWishlist = produce((draft: Draft<actionProps>[], pokemon) => {
-  console.log('add')
-  draft.push(pokemon)
+  const poke = {
+    ...pokemon,
+    favorite: true
+  }
+  draft.push(poke)
 })
 
 const remWishlist = produce((draft: Draft<actionProps>[], pokemon) => {
-  console.log('rem')
   const pokemonIndex = draft.findIndex(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (item: any) => item.name === pokemon.name

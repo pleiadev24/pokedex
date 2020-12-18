@@ -23,8 +23,11 @@ export const Form = styled.form`
   ${({ theme }) => css`
     display: flex;
     align-items: center;
+    flex-direction: column;
+    text-align: center;
+    margin-top: ${theme.spacings.small};
     > * {
-      margin: ${theme.spacings.medium};
+      margin-bottom: ${theme.spacings.small};
     }
     img {
       max-width: 13rem;
@@ -32,6 +35,24 @@ export const Form = styled.form`
     svg[aria-label='favorite'] {
       fill: ${theme.colors.red};
       cursor: pointer;
+    }
+  `}
+`
+
+export const ContentMessage = styled.div`
+  grid-column: 1/-1;
+  grid-row: 3;
+  text-align: center;
+`
+
+export const SearchGroup = styled.div`
+  ${({ theme }) => css`
+    display: flex;
+    button {
+      margin-left: ${theme.spacings.xxsmall};
+      ${media.greaterThan('medium')`
+        margin-left: ${theme.spacings.xsmall};
+      `}
     }
   `}
 `
