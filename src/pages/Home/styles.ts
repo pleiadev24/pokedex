@@ -42,5 +42,17 @@ export const Card = styled.div`
     height: 100%;
     background: ${theme.colors.primary};
     padding: ${theme.spacings.medium};
+    border-radius: ${theme.border.radius};
+    box-shadow: 0 0 0.5rem ${theme.colors.secondary};
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: ${theme.spacings.xsmall};
+    svg {
+      fill: ${theme.colors.red};
+    }
+    img,
+    svg {
+      margin: 0 auto;
+    }
   `}
 `
